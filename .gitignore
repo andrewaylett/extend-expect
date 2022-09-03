@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+dist
+.idea
+.*.swp
+.tool-versions
+.npmrc
+*~
