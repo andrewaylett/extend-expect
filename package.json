@@ -54,7 +54,7 @@
     "typescript": "4.8.2"
   },
   "peerDependencies": {
-    "@jest/globals": "^28|^29",
-    "expect": "^28|^29"
+    "@jest/globals": "^28 || ^29",
+    "expect": "^28 || ^29"
   }
 }

@@ -80,10 +80,9 @@ itNonRecursive(
             return Object.fromEntries(
                 Object.entries(deps).map(
                     ([k, v]: [string, string]): [string, string] => {
-                        const first = v.split('|')[0];
-                        const min = semver.minVersion(first);
+                        const min = semver.minVersion(v);
                         if (!min) {
-                            throw new Error(`No semver minimum for ${first}`);
+                            throw new Error(`No semver minimum for ${v}`);
                         }
                         return [k, min.format()];
                     },
@@ -103,6 +102,10 @@ itNonRecursive(
             dependencies,
             devDependencies,
             peerDependencies,
+            overrides: {
+                ...dependencies,
+                ...devDependencies,
+            },
         };
         await writeFile(
             path.join(dir, 'package.json'),
