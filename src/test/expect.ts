@@ -15,8 +15,12 @@
  */
 
 import { extend } from '..';
-import { fileMatchers, FileMatchers } from './file';
-import { ProcessMatchers, processMatchers } from './process';
+
+import { fileMatchers } from './file';
+import { processMatchers } from './process';
+
+import type { FileMatchers } from './file';
+import type { ProcessMatchers } from './process';
 
 const customMatchers = {
     ...fileMatchers,

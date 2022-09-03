@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { MatcherState } from 'expect';
-import { MatchersFor, ExpectationResult } from '..';
 import fs from 'fs';
+
+import type { MatchersFor, MatcherState, ExpectationResult } from '..';
 
 function isAFile(
     this: MatcherState,

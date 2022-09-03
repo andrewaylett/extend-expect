@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { describe, it } from '@jest/globals';
 import { readFileSync } from 'fs';
-import { expect } from './test/expect';
 import * as fs from 'fs';
 import { promisify } from 'util';
 import * as os from 'os';
 import * as path from 'path';
-import semver from 'semver';
 import { spawn } from 'child_process';
+
+import semver from 'semver';
+import { describe, it } from '@jest/globals';
+
+import { expect } from './test/expect';
 
 type PackageFile = {
     source?: string;
@@ -45,14 +47,16 @@ const PACKAGE_JSON: PackageFile = JSON.parse(
 );
 
 describe('Build output', () => {
-    const { source, main, types } = PACKAGE_JSON;
+    const { main, source, types } = PACKAGE_JSON;
 
     it('source exists', () => {
         expect(source).isAFile();
     });
+
     it('main exists', () => {
-        expect(main).isAFile;
+        expect(main).isAFile();
     });
+
     it('types exists', () => {
         expect(types).isAFile();
     });
@@ -76,9 +80,10 @@ itNonRecursive(
             return Object.fromEntries(
                 Object.entries(deps).map(
                     ([k, v]: [string, string]): [string, string] => {
-                        const min = semver.minVersion(v);
+                        const first = v.split('|')[0];
+                        const min = semver.minVersion(first);
                         if (!min) {
-                            throw new Error(`No semver minimum for ${v}`);
+                            throw new Error(`No semver minimum for ${first}`);
                         }
                         return [k, min.format()];
                     },
@@ -87,17 +92,25 @@ itNonRecursive(
         };
         const dependencies = strip(PACKAGE_JSON.dependencies);
         const devDependencies = strip(PACKAGE_JSON.devDependencies);
+        const peerDependencies = strip(PACKAGE_JSON.peerDependencies);
+        if (peerDependencies && devDependencies) {
+            for (const [key, value] of Object.entries(peerDependencies)) {
+                devDependencies[key] = value;
+            }
+        }
         const packageJson: PackageFile = {
             ...PACKAGE_JSON,
             dependencies,
             devDependencies,
-            peerDependencies: {},
+            peerDependencies,
         };
         await writeFile(
             path.join(dir, 'package.json'),
             JSON.stringify(packageJson),
         );
+        // eslint-disable-next-line no-console
         console.log(`Working in: ${dir}`);
+
         await expect(
             spawn('npm', ['install'], { cwd: dir, stdio: 'inherit' }),
         ).toSpawnSuccessfully();

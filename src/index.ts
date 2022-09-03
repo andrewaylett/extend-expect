@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { Expect as RawExpect, Matchers, MatcherState } from 'expect';
 import { expect as originalExpect } from '@jest/globals';
-import ArgumentsOf = jest.ArgumentsOf;
+
+import type {
+    Expect as RawExpect,
+    Matchers,
+    MatcherState as OriginalMatcherState,
+} from 'expect';
+import type jestMatcherUtils from 'jest-matcher-utils';
+
+export type MatcherState = OriginalMatcherState & {
+    utils: typeof jestMatcherUtils;
+};
 
 /**
  * The type of the object that needs to be passed to extend Jest's expect.
@@ -70,12 +79,13 @@ export type MatchersFor<T> = {
         : never;
 };
 
+type EnsureParameters<T> = T extends (...args: infer P) => unknown ? P : never;
+
 /**
  * Ensure `C` has return types that are suitable for an extension function.
  */
 type Extensions<C> = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [k in keyof C]: (...p: ArgumentsOf<C[k]>) => void | Promise<void>;
+    [k in keyof C]: (...p: EnsureParameters<C[k]>) => void | Promise<void>;
 };
 
 /**
@@ -88,7 +98,7 @@ type ExtendedMatchers<C extends Extensions<C>> = Matchers<void> & C;
  * Used for `resolves` and `rejects`.
  */
 type MakePromise<C> = {
-    [k in keyof C]: (...p: ArgumentsOf<C[k]>) => Promise<void>;
+    [k in keyof C]: (...p: EnsureParameters<C[k]>) => Promise<void>;
 };
 
 /**
@@ -142,7 +152,8 @@ export interface Expect<F extends Extensions<F>> extends RawExpect {
  *
  * For examples of this function in action, look in `src/test/expect.ts`.
  *
- * @param customMatchers An object containing the underlying match functions.
+ * @param {MatchersFor<F>} customMatchers An object containing the underlying match functions.
+ * @return {Expect<F>} Jest's expect.
  */
 export const extend = <F extends Extensions<F>>(
     customMatchers: MatchersFor<F>,
