@@ -6,3 +6,4 @@ dist
 .tool-versions
 .npmrc
 *~
+tsconfig.tsbuildinfo

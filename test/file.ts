@@ -16,7 +16,7 @@
 
 import fs from 'fs';
 
-import type { MatchersFor, MatcherState, ExpectationResult } from '..';
+import type { MatchersFor, MatcherState, ExpectationResult } from '../src';
 
 function isAFile(
     this: MatcherState,

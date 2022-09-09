@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extend } from '..';
+import { extend } from '../src';
 
 import { fileMatchers } from './file';
 import { processMatchers } from './process';

@@ -24,7 +24,7 @@ import { spawn } from 'child_process';
 import semver from 'semver';
 import { describe, it } from '@jest/globals';
 
-import { expect } from './test/expect';
+import { expect } from './expect';
 
 type PackageFile = {
     source?: string;
@@ -120,7 +120,16 @@ itNonRecursive(
         await expect(
             spawn(
                 'cp',
-                ['-r', 'src', '.ed*', '.es*', 'jest*', 'tsconfig*', dir],
+                [
+                    '-r',
+                    'src',
+                    'test',
+                    '.ed*',
+                    '.es*',
+                    'jest*',
+                    'tsconfig*',
+                    dir,
+                ],
                 {
                     stdio: 'inherit',
                     shell: true,

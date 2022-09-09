@@ -12,16 +12,12 @@
   "source": "src/index.ts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
   "scripts": {
     "build": "npm run buildonly",
-    "buildonly": "tsc",
+    "buildonly": "tsc -b --verbose .",
     "test": "echo 'tested in post-build'",
-    "postbuild": "NODE_OPTIONS=--experimental-vm-modules jest src/postbuild.test.ts",
-    "lint": "eslint src --ext .ts",
+    "postbuild": "NODE_OPTIONS=--experimental-vm-modules jest test/postbuild.test.ts",
+    "lint": "eslint src test --ext .ts",
     "prebuild": "npm run test",
     "pretest": "npm run lint",
     "lint:fix": "npm run lint -- --fix",

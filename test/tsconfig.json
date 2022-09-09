@@ -1,0 +1,12 @@
+{
+  "extends": "..",
+  "include": ["./**.ts"],
+  "references": [
+    {
+      "path": "../src"
+    }
+  ],
+  "compilerOptions": {
+    "noEmit": true
+  }
+}
