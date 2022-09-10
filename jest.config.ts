@@ -1,14 +1,8 @@
 import type { InitialOptionsTsJest } from 'ts-jest';
 
 const options: InitialOptionsTsJest = {
-    preset: 'ts-jest/presets/default-esm',
+    preset: 'ts-jest',
     testEnvironment: 'node',
-    globals: {
-        'ts-jest': {
-            useESM: true,
-        },
-    },
-    extensionsToTreatAsEsm: ['.ts'],
     injectGlobals: false,
 };
 

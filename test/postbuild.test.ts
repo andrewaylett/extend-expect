@@ -111,7 +111,6 @@ itNonRecursive(
             path.join(dir, 'package.json'),
             JSON.stringify(packageJson),
         );
-        // eslint-disable-next-line no-console
         console.log(`Working in: ${dir}`);
 
         await expect(
