@@ -132,9 +132,9 @@ type ExtendedPromiseMatchers<C extends Extensions<C>> = {
  * The extended `expect`, with all original matchers as well as our extensions.
  */
 export interface Expect<F extends Extensions<F>> extends RawExpect {
-    <T = unknown>(actual: T): ExtendedMatchers<F> &
-        ExtendedPromiseMatchers<F> &
-        typeof originalExpect;
+    <T = unknown>(
+        actual: T,
+    ): ExtendedMatchers<F> & ExtendedPromiseMatchers<F> & typeof originalExpect;
 }
 
 /**
