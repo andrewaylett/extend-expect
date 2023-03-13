@@ -33,7 +33,7 @@
     "@jest/globals": "29.5.0",
     "@tsconfig/node16": "1.0.3",
     "@types/jest": "29.4.0",
-    "@types/node": "18.15.0",
+    "@types/node": "18.15.1",
     "@types/semver": "7.3.13",
     "@typescript-eslint/eslint-plugin": "5.54.1",
     "eslint": "8.36.0",
