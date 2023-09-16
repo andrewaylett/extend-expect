@@ -132,9 +132,9 @@ type ExtendedPromiseMatchers<C extends Extensions<C>> = {
  * The extended `expect`, with all original matchers as well as our extensions.
  */
 export interface Expect<F extends Extensions<F>> extends RawExpect {
-    <T = unknown>(actual: T): ExtendedMatchers<F> &
-        ExtendedPromiseMatchers<F> &
-        typeof originalExpect;
+    <T = unknown>(
+        actual: T,
+    ): ExtendedMatchers<F> & ExtendedPromiseMatchers<F> & typeof originalExpect;
 }
 
 /**
@@ -150,10 +150,10 @@ export interface Expect<F extends Extensions<F>> extends RawExpect {
  * should probably supply correct types so that your tests may take advantage
  * of TypeScript's checking.
  *
- * For examples of this function in action, look in `src/test/expect.ts`.
+ * For examples of this function in action, look in `test/expect.ts`.
  *
- * @param {MatchersFor<F>} customMatchers An object containing the underlying match functions.
- * @return {Expect<F>} Jest's expect.
+ * @param {<F extends Extensions<F>>MatchersFor<F>} customMatchers An object containing the underlying match functions.
+ * @return {<F extends Extensions<F>>Expect<F>} Jest's expect.
  */
 export const extend = <F extends Extensions<F>>(
     customMatchers: MatchersFor<F>,

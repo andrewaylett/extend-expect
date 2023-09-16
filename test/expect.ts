@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { extend } from '../src';
+import { extend } from '../src/index.js';
 
-import { fileMatchers } from './file';
-import { processMatchers } from './process';
+import { fileMatchers } from './file.js';
+import { processMatchers } from './process.js';
 
-import type { FileMatchers } from './file';
-import type { ProcessMatchers } from './process';
+import type { FileMatchers } from './file.js';
+import type { ProcessMatchers } from './process.js';
 
 const customMatchers = {
     ...fileMatchers,

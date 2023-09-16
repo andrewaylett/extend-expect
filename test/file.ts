@@ -16,7 +16,11 @@
 
 import fs from 'fs';
 
-import type { MatchersFor, MatcherState, ExpectationResult } from '../src';
+import type {
+    MatchersFor,
+    MatcherState,
+    ExpectationResult,
+} from '../src/index.js';
 
 function isAFile(
     this: MatcherState,
