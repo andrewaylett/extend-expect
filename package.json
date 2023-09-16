@@ -18,14 +18,16 @@
   "scripts": {
     "build": "npm run buildonly",
     "buildonly": "tsc -b --verbose .",
-    "test": "echo 'tested in post-build'",
-    "postbuild": "NODE_OPTIONS=--experimental-vm-modules jest test/postbuild.test.ts",
+    "clean": "rm -rf build dist",
+    "dev": "npm run lint:fix && npm run build",
     "lint": "eslint .",
-    "prebuild": "npm run test",
-    "pretest": "npm run lint",
     "lint:fix": "npm run lint -- --fix",
-    "dev": "npm run lint:fix && npm run buildonly && npm run test",
-    "prepublishOnly": "npm run build"
+    "postbuild": "npm run test",
+    "postinstall": "npm run buildonly",
+    "posttest": "prepackage-checks",
+    "prepublishOnly": "npm run clean && npm run build",
+    "pretest": "npm run lint",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest test/postbuild.test.ts"
   },
   "prettier": {
     "semi": true,
@@ -43,6 +45,7 @@
     "eslint-plugin-jest": "27.4.0",
     "expect": "29.7.0",
     "jest": "29.7.0",
+    "prepackage-checks": "0.1.2",
     "prettier": "3.0.3",
     "semver": "7.5.4",
     "ts-jest": "29.1.1",
@@ -50,7 +53,6 @@
     "typescript": "5.2.2"
   },
   "peerDependencies": {
-    "@jest/globals": "^28 || ^29",
     "expect": "^28 || ^29",
     "jest-matcher-utils": "^28 || ^29"
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expect as originalExpect } from '@jest/globals';
+import { expect as originalExpect } from 'expect';
 
 import type {
     Expect as RawExpect,
