@@ -24,7 +24,7 @@ import { spawn } from 'child_process';
 import semver from 'semver';
 import { describe, it } from '@jest/globals';
 
-import { expect } from './expect';
+import { expect } from './expect.js';
 
 type PackageFile = {
     source?: string;

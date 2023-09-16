@@ -16,7 +16,11 @@
 
 import { ChildProcess } from 'child_process';
 
-import type { ExpectationResult, MatchersFor, MatcherState } from '../src';
+import type {
+    ExpectationResult,
+    MatchersFor,
+    MatcherState,
+} from '../src/index.js';
 
 async function toSpawnSuccessfully(
     this: MatcherState,

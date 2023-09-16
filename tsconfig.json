@@ -1,6 +1,6 @@
 {
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
-  "extends": "@tsconfig/node16/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "references": [
     {
       "path": "src"
@@ -12,7 +12,6 @@
   "files": [],
   "compilerOptions": {
     "composite": true,
-    "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
