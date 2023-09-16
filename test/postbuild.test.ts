@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { readFileSync } from 'fs';
-import * as fs from 'fs';
-import { promisify } from 'util';
-import * as os from 'os';
-import * as path from 'path';
-import { spawn } from 'child_process';
+import { readFileSync } from 'node:fs';
+import * as fs from 'node:fs';
+import { promisify } from 'node:util';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { spawn } from 'node:child_process';
 
 import semver from 'semver';
 import { describe, it } from '@jest/globals';
@@ -97,8 +97,10 @@ itNonRecursive(
                 devDependencies[key] = value;
             }
         }
+        const version = PACKAGE_JSON['version'] + '-downgrade-build';
         const packageJson: PackageFile = {
             ...PACKAGE_JSON,
+            version,
             dependencies,
             devDependencies,
             peerDependencies,
@@ -113,9 +115,6 @@ itNonRecursive(
         );
         console.log(`Working in: ${dir}`);
 
-        await expect(
-            spawn('npm', ['install'], { cwd: dir, stdio: 'inherit' }),
-        ).toSpawnSuccessfully();
         await expect(
             spawn(
                 'cp',
@@ -136,7 +135,14 @@ itNonRecursive(
             ),
         ).toSpawnSuccessfully();
         await expect(
-            spawn('npm', ['run', 'build'], {
+            spawn('npm', ['install'], {
+                cwd: dir,
+                stdio: 'inherit',
+                env: { ...process.env, [POST_BUILD_TESTS]: '1' },
+            }),
+        ).toSpawnSuccessfully();
+        await expect(
+            spawn('npm', ['run', 'buildonly'], {
                 cwd: dir,
                 stdio: 'inherit',
                 env: { ...process.env, [POST_BUILD_TESTS]: '1' },
