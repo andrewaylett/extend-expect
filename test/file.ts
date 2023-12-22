@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import { stat } from 'node:fs/promises';
 
 import type {
     MatchersFor,
-    MatcherState,
+    MatcherContext,
     ExpectationResult,
-} from '../src/index.js';
+} from 'extend-expect';
 
-function isAFile(
-    this: MatcherState,
+async function isAFile(
+    this: MatcherContext,
     received: unknown,
     expected: unknown,
-): ExpectationResult {
+): Promise<ExpectationResult> {
     const options = {
         comment: 'Check that a file exists',
         isNot: this.isNot,
@@ -58,23 +58,104 @@ function isAFile(
                 ),
         };
     }
-    return {
-        pass: fs.existsSync(received),
-        message: () =>
-            this.utils.matcherErrorMessage(
-                matcherHint,
-                `${this.utils.RECEIVED_COLOR(
-                    'received',
-                )} value must exist as a file`,
-                this.utils.printReceived(received),
-            ),
+    try {
+        return {
+            pass: (await stat(received)).isFile(),
+            message: () =>
+                this.utils.matcherErrorMessage(
+                    matcherHint,
+                    `${this.utils.RECEIVED_COLOR(
+                        'received',
+                    )} value must be a file`,
+                    this.utils.printReceived(received),
+                ),
+        };
+    } catch (e) {
+        return {
+            pass: false,
+            message: (): string =>
+                this.utils.matcherErrorMessage(
+                    matcherHint,
+
+                    `${this.utils.RECEIVED_COLOR(
+                        'received',
+                    )} value must exist and be a file`,
+                    this.utils.printReceived(received),
+                ),
+        };
+    }
+}
+
+async function isADirectory(
+    this: MatcherContext,
+    received: unknown,
+    expected: unknown,
+): Promise<ExpectationResult> {
+    const options = {
+        comment: 'Check that a directory exists',
+        isNot: this.isNot,
+        promise: this.promise,
     };
+    this.utils.ensureNoExpected(expected, 'isADirectory', options);
+
+    const matcherHint = this.utils.matcherHint(
+        'toBeADirectory',
+        undefined,
+        undefined,
+        options,
+    );
+
+    if (typeof received !== 'string') {
+        return {
+            pass: false,
+            message: () =>
+                this.utils.matcherErrorMessage(
+                    matcherHint,
+                    `${this.utils.RECEIVED_COLOR(
+                        'received',
+                    )} value must be a string directory name`,
+                    this.utils.printWithType(
+                        'Received',
+                        received,
+                        this.utils.printReceived,
+                    ),
+                ),
+        };
+    }
+    try {
+        return {
+            pass: (await stat(received)).isDirectory(),
+            message: () =>
+                this.utils.matcherErrorMessage(
+                    matcherHint,
+                    `${this.utils.RECEIVED_COLOR(
+                        'received',
+                    )} value must be a directory`,
+                    this.utils.printReceived(received),
+                ),
+        };
+    } catch (e) {
+        return {
+            pass: false,
+            message: (): string =>
+                this.utils.matcherErrorMessage(
+                    matcherHint,
+
+                    `${this.utils.RECEIVED_COLOR(
+                        'received',
+                    )} value must exist and be a directory`,
+                    this.utils.printReceived(received),
+                ),
+        };
+    }
 }
 
 export interface FileMatchers {
-    isAFile(): void;
+    isAFile(): Promise<void>;
+    isADirectory(): Promise<void>;
 }
 
 export const fileMatchers: MatchersFor<FileMatchers> = {
     isAFile,
+    isADirectory,
 };

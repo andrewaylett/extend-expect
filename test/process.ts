@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Andrew Aylett
+ * Copyright 2022-2023 Andrew Aylett
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import type {
     ExpectationResult,
     MatchersFor,
     MatcherState,
-} from '../src/index.js';
+} from 'extend-expect';
 
 async function toSpawnSuccessfully(
     this: MatcherState,
@@ -32,7 +32,24 @@ async function toSpawnSuccessfully(
         isNot: this.isNot,
         promise: this.promise,
     };
-    this.utils.ensureNoExpected(expected, 'isAFile', options);
+
+    if (typeof expected !== 'undefined' && typeof expected !== 'boolean') {
+        // Prepend maybe not only for backward compatibility.
+        const matcherString = (options ? '' : '[.not]') + 'toSpawnSuccessfully';
+        throw new Error(
+            this.utils.matcherErrorMessage(
+                this.utils.matcherHint(matcherString, undefined, '', options),
+                // Because expected is omitted in hint above,
+                // expected is black instead of green in message below.
+                'this matcher must have a boolean expected argument, if one is provided',
+                this.utils.printWithType(
+                    'Expected',
+                    expected,
+                    this.utils.printExpected,
+                ),
+            ),
+        );
+    }
 
     const matcherHint = this.utils.matcherHint(
         'toSpawnSuccessfully',
@@ -59,12 +76,18 @@ async function toSpawnSuccessfully(
         };
     }
 
+    function pass(code: number | null) {
+        if (typeof expected === 'boolean') {
+            return (code === 0) === expected;
+        }
+        return code === 0;
+    }
+
     return new Promise((resolve) => {
         received.on('exit', (code, signal) => {
-            const pass = code === 0;
-            const status = pass ? 'success' : 'failure';
+            const status = pass(code) ? 'success' : 'failure';
             resolve({
-                pass,
+                pass: pass(code),
                 message: () =>
                     this.utils.matcherErrorMessage(
                         matcherHint,
@@ -79,7 +102,7 @@ async function toSpawnSuccessfully(
 }
 
 export interface ProcessMatchers {
-    toSpawnSuccessfully(): Promise<void>;
+    toSpawnSuccessfully(success?: boolean): Promise<void>;
 }
 
 export const processMatchers: MatchersFor<ProcessMatchers> = {

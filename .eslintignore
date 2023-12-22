@@ -1,1 +1,3 @@
 dist
+test/successful
+test/failing

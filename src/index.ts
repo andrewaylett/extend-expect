@@ -16,16 +16,11 @@
 
 import { expect as originalExpect } from 'expect';
 
-import type {
-    Expect as RawExpect,
-    Matchers,
-    MatcherState as OriginalMatcherState,
-} from 'expect';
-import type jestMatcherUtils from 'jest-matcher-utils';
+import type { Expect as RawExpect, Matchers, MatcherContext } from 'expect';
 
-export type MatcherState = OriginalMatcherState & {
-    utils: typeof jestMatcherUtils;
-};
+export type { MatcherContext } from 'expect';
+
+export type MatcherState = MatcherContext;
 
 /**
  * The type of the object that needs to be passed to extend Jest's expect.
@@ -49,7 +44,7 @@ export type ExpectationResult = SyncVariant<ReturnType<CustomMatchers['fn']>>;
  */
 export type MatcherFn<
     R extends ExpectationResult | Promise<ExpectationResult>,
-> = (this: MatcherState, actual: unknown, ...expected: unknown[]) => R;
+> = (this: MatcherContext, actual: unknown, ...expected: unknown[]) => R;
 
 /**
  * When called on an expectation, in test code, a matcher should look like this
@@ -131,19 +126,25 @@ type ExtendedPromiseMatchers<C extends Extensions<C>> = {
 /**
  * The extended `expect`, with all original matchers as well as our extensions.
  */
-export interface Expect<F extends Extensions<F>> extends RawExpect {
+export interface Expect<
+    Functions extends Extensions<Functions>,
+    Original extends RawExpect = RawExpect,
+> extends RawExpect {
     <T = unknown>(
         actual: T,
-    ): ExtendedMatchers<F> & ExtendedPromiseMatchers<F> & typeof originalExpect;
+    ): ExtendedMatchers<Functions> &
+        ExtendedPromiseMatchers<Functions> &
+        ReturnType<Original>;
 }
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Extends Jest's `expect`, then returns it with the correct extended type.
  *
  * Note that this does have side effects, you probably only want to run it once
  * and save the result to be imported by your tests.
  *
- * The generic parameter is expected to be an interface that describes the
+ * The first generic parameter is expected to be an interface that describes the
  * functions that will be made available on the result of calling `expect()`.
  *
  * While the underlying matchers must handle unknown types, this interface
@@ -152,12 +153,21 @@ export interface Expect<F extends Extensions<F>> extends RawExpect {
  *
  * For examples of this function in action, look in `test/expect.ts`.
  *
- * @param {<F extends Extensions<F>>MatchersFor<F>} customMatchers An object containing the underlying match functions.
- * @return {<F extends Extensions<F>>Expect<F>} Jest's expect.
+ * Jest itself exposes an `expect` typed with extra functions compared to the
+ * base `expect` package.  To access these extensions, supply Jest's expect as a
+ * second parameter.
+ *
+ * @param customMatchers An object containing the underlying match functions.
+ * @param expect An instance of `expect`, or an extension of it.
+ * @return An extended expect, with the correct extended type.
  */
-export const extend = <F extends Extensions<F>>(
-    customMatchers: MatchersFor<F>,
-): Expect<F> => {
-    originalExpect.extend(customMatchers);
-    return originalExpect as unknown as Expect<F>;
+export const extend = <
+    Functions extends Extensions<Functions>,
+    Original extends RawExpect = RawExpect,
+>(
+    customMatchers: MatchersFor<Functions>,
+    expect?: Original,
+): Expect<Functions, Original> => {
+    (expect ?? originalExpect).extend(customMatchers);
+    return (expect ?? originalExpect) as unknown as Expect<Functions, Original>;
 };

@@ -22,6 +22,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
-    "tsBuildInfoFile": "./build/src.tsBuildInfo"
+    "tsBuildInfoFile": "./build/base.tsBuildInfo"
   }
 }

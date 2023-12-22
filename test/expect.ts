@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extend } from '../src/index.js';
+import { extend } from 'extend-expect';
 
 import { fileMatchers } from './file.js';
 import { processMatchers } from './process.js';
