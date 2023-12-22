@@ -12,9 +12,12 @@
     "node": ">=18"
   },
   "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
     "build": "npm run buildonly",
     "buildonly": "tsc -b --verbose .",
@@ -24,10 +27,10 @@
     "lint:fix": "npm run lint -- --fix",
     "postbuild": "npm run test",
     "prepare": "npm run buildonly",
-    "posttest": "prepackage-checks",
+    "posttest": "prepackage-checks && downgrade-build build",
     "prepublishOnly": "npm run clean && npm run build",
     "pretest": "npm run lint",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest test/postbuild.test.ts"
+    "test": "node --loader ts-node/esm test/packages.test.ts"
   },
   "prettier": {
     "semi": true,
@@ -40,6 +43,7 @@
     "@types/jest": "29.5.11",
     "@types/node": "20.10.5",
     "@types/semver": "7.5.6",
+    "downgrade-build": "1.0.0",
     "eslint": "8.56.0",
     "eslint-config-andrewaylett": "3.0.0",
     "eslint-plugin-jest": "27.6.0",
@@ -53,7 +57,7 @@
     "typescript": "5.3.3"
   },
   "peerDependencies": {
-    "expect": "^28 || ^29",
-    "jest-matcher-utils": "^28 || ^29"
+    "expect": "^29.7",
+    "jest-matcher-utils": "^29"
   }
 }

@@ -1,11 +1,6 @@
 {
   "extends": "..",
-  "include": ["./**.ts"],
-  "references": [
-    {
-      "path": "../src"
-    }
-  ],
+  "include": ["./*.ts"],
   "compilerOptions": {
     "noEmit": true,
     "tsBuildInfoFile": "../build/test.tsBuildInfo"

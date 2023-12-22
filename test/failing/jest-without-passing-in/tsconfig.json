@@ -1,0 +1,7 @@
+{
+  "files": ["./jest.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true
+  }
+}

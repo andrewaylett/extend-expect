@@ -1,0 +1,7 @@
+{
+  "files": ["./empty.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true
+  }
+}
