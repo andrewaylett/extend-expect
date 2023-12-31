@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extend } from 'extend-expect';
+import { extend, type MatchersFor } from 'extend-expect';
 
 import { fileMatchers } from './file.js';
 import { processMatchers } from './process.js';
@@ -22,11 +22,11 @@ import { processMatchers } from './process.js';
 import type { FileMatchers } from './file.js';
 import type { ProcessMatchers } from './process.js';
 
-const customMatchers = {
+interface CoreExtensions extends FileMatchers, ProcessMatchers {}
+
+const customMatchers: MatchersFor<CoreExtensions> = {
     ...fileMatchers,
     ...processMatchers,
 };
 
-interface CoreExtensions extends FileMatchers, ProcessMatchers {}
-
-export const expect = extend<CoreExtensions>(customMatchers);
+export const expect = extend(customMatchers);

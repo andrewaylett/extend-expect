@@ -69,18 +69,28 @@ function buildTests(base: string, cases: Promise<string[]>, pass: boolean) {
                 );
                 await ctx.test(`${testcase} should install cleanly`, () =>
                     expect(
-                        spawn(
-                            'npm',
-                            [
-                                'install',
-                                path.resolve(testDirectory, '../../..'),
-                            ],
-                            {
-                                cwd: path.resolve(buildDirectory, testcase),
-                                stdio: 'pipe',
-                            },
-                        ),
+                        spawn('npm', ['install'], {
+                            cwd: path.resolve(buildDirectory, testcase),
+                            stdio: 'pipe',
+                        }),
                     ).toSpawnSuccessfully(),
+                );
+                await ctx.test(
+                    `${testcase} should install extend-expect cleanly`,
+                    () =>
+                        expect(
+                            spawn(
+                                'npm',
+                                [
+                                    'install',
+                                    path.resolve(testDirectory, '../../..'),
+                                ],
+                                {
+                                    cwd: path.resolve(buildDirectory, testcase),
+                                    stdio: 'pipe',
+                                },
+                            ),
+                        ).toSpawnSuccessfully(),
                 );
                 await ctx.test(
                     `${testcase} should run tsc ${

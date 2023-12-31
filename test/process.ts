@@ -17,16 +17,16 @@
 import { ChildProcess } from 'child_process';
 
 import type {
-    ExpectationResult,
+    AsyncExpectationResult,
     MatchersFor,
-    MatcherState,
+    MatcherContext,
 } from 'extend-expect';
 
 async function toSpawnSuccessfully(
-    this: MatcherState,
+    this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     const options = {
         comment: 'Check that a process succeeded',
         isNot: this.isNot,

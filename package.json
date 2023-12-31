@@ -30,7 +30,9 @@
     "posttest": "prepackage-checks && downgrade-build build",
     "prepublishOnly": "npm run clean && npm run build",
     "pretest": "npm run lint",
-    "test": "node --loader ts-node/esm test/packages.test.ts"
+    "test": "npm run test:packages && npm run test:extensions",
+    "test:packages": "node --loader ts-node/esm test/packages.test.ts",
+    "test:extensions": "node --loader ts-node/esm test/extensions.test.ts"
   },
   "prettier": {
     "semi": true,

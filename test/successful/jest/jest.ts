@@ -3,15 +3,15 @@ import { expect as jestExpect } from '@jest/globals';
 
 import type {
     MatchersFor,
-    MatcherState,
-    ExpectationResult,
+    MatcherContext,
+    AsyncExpectationResult,
 } from 'extend-expect';
 
 async function toBeAStub(
-    this: MatcherState,
+    this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     return {
         pass: true,
         message: () => '',
@@ -31,7 +31,11 @@ const expect = extend(processMatchers, jestExpect);
 jestExpect(1).toMatchInlineSnapshot('1');
 // Only available in Jest's extensions
 expect(1).toMatchInlineSnapshot('1');
+expect(1).not.toMatchInlineSnapshot('1');
 // Locally extended
 expect(2).toBeAStub(false);
+expect(3).not.toBeAStub(true);
+
+jestExpect(1).not.toMatchInlineSnapshot('1');
 
 export default expect;
