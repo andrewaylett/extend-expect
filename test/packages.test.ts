@@ -43,11 +43,15 @@ const SUCCESSFUL: Promise<string[]> = readdir(SUCCESSFUL_BASE);
 const FAILING_BASE: string = path.resolve('./test', 'failing');
 const FAILING: Promise<string[]> = readdir(FAILING_BASE);
 
-function buildTests(base: string, cases: Promise<string[]>, pass: boolean) {
-    test(`${
+async function buildTests(
+    base: string,
+    cases: Promise<string[]>,
+    pass: boolean,
+) {
+    await test(`${
         pass ? 'Successful' : 'Failing'
-    } Tests`, async (ctx): Promise<void> =>
-        Promise.all(
+    } Tests`, async (ctx): Promise<void> => {
+        await Promise.all(
             (await cases).map(async (testcase) => {
                 const testDirectory = path.resolve(base, testcase);
                 if (!(await stat(testDirectory)).isDirectory()) {
@@ -113,7 +117,7 @@ function buildTests(base: string, cases: Promise<string[]>, pass: boolean) {
                         );
 
                         const allData: string[] = [];
-                        childProcess.stdout.on('data', (data) =>
+                        childProcess.stdout.on('data', (data: string) =>
                             allData.push(data),
                         );
                         childProcess.stdout.pipe(process.stdout);
@@ -123,15 +127,18 @@ function buildTests(base: string, cases: Promise<string[]>, pass: boolean) {
 
                         const blob = allData.join('');
 
-                        const { assert } = await import(
+                        const { assert } = (await import(
                             path.resolve(testDirectory, 'expect.cjs')
-                        );
+                        )) as {
+                            assert: (output: string, e: typeof expect) => void;
+                        };
                         assert(blob, expect);
                     },
                 );
             }),
-        ).then(() => {}));
+        );
+    });
 }
 
-buildTests(SUCCESSFUL_BASE, SUCCESSFUL, true);
-buildTests(FAILING_BASE, FAILING, false);
+await buildTests(SUCCESSFUL_BASE, SUCCESSFUL, true);
+await buildTests(FAILING_BASE, FAILING, false);

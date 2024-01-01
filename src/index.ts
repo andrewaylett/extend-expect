@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    AsymmetricMatchers,
-    BaseExpect,
-    expect as originalExpect,
-} from 'expect';
+import { expect as originalExpect } from 'expect';
 
 import type {
+    AsymmetricMatchers,
     AsyncExpectationResult,
+    BaseExpect,
     Expect as RawExpect,
     MatcherContext,
     SyncExpectationResult,
@@ -71,11 +69,9 @@ type AsyncMatcherKeys = 'rejects' | 'resolves';
 
 type InvertedMatcherKeys = 'not';
 
-type Promisify<T> = T extends Promise<unknown> ? T : Promise<T>;
-
 type Asyncify<F> = F extends (...args: infer P) => infer R
-    ? (...args: P) => Promisify<R>
-    : F;
+    ? (...args: P) => Promise<Awaited<R>>
+    : never;
 
 /**
  * Ensure `C` has return types that are suitable for an extension function.
@@ -90,11 +86,13 @@ type Extensions<C> = {
 export type ExtendedMatchers<
     Matchers extends MatchersFor<unknown>,
     Original extends RawExpect,
-> = (Matchers extends MatchersFor<infer Functions> ? Functions : never) &
-    Omit<
-        ReturnType<Original>,
-        InvertedMatcherKeys | AsyncMatcherKeys | keyof Matchers
-    >;
+> = Matchers extends MatchersFor<infer Functions>
+    ? Functions &
+          Omit<
+              ReturnType<Original>,
+              InvertedMatcherKeys | AsyncMatcherKeys | keyof Matchers
+          >
+    : never;
 
 /**
  * Given an object with functions in it, a variant that always returns promises.
@@ -105,18 +103,16 @@ export type MakePromise<C> = {
 };
 
 /**
- * A set of matchers and their inverse.
- */
-export type Invertable<T> = {
-    not: Omit<T, InvertedMatcherKeys | AsyncMatcherKeys>;
-} & Omit<T, InvertedMatcherKeys>;
-
-/**
- * A set of matchers and their async variants.
+ * A set of matchers and their async and inverse variants.
  */
 export type Promisible<T> = {
-    resolves: MakePromise<T>;
-    rejects: MakePromise<T>;
+    resolves: MakePromise<T> & {
+        not: MakePromise<T>;
+    };
+    rejects: MakePromise<T> & {
+        not: MakePromise<T>;
+    };
+    not: T;
 } & T;
 
 /**
@@ -125,13 +121,11 @@ export type Promisible<T> = {
 export type Expect<
     Matchers extends MatchersFor<unknown>,
     Original extends RawExpect,
-> = {
-    <T = unknown>(
-        actual: T,
-    ): Promisible<Invertable<ExtendedMatchers<Matchers, Original>>>;
-} & BaseExpect &
-    AsymmetricMatchers &
-    Invertable<Omit<AsymmetricMatchers, 'any' | 'anything'>>;
+> = (<T = unknown>(
+    actual: T,
+) => Promisible<ExtendedMatchers<Matchers, Original>>) &
+    BaseExpect &
+    AsymmetricMatchers & { not: Omit<AsymmetricMatchers, 'any' | 'anything'> };
 
 /**
  * Extends Jest's `expect`, then returns it with the correct extended type.

@@ -1,0 +1,8 @@
+{
+  // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
+  "extends": ".",
+  "files": ["jest.config.ts"],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./build/jest.tsBuildInfo"
+  }
+}

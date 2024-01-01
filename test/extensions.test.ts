@@ -99,12 +99,13 @@ export const dummyMatchers: MatchersFor<DummyMatchers> = {
     isASyncBoolean,
 };
 
-test('Builds an extension', async (ctx): Promise<void> => {
+await test('Builds an extension', async (ctx): Promise<void> => {
     const expect = extend(dummyMatchers);
     await ctx.test('async isAnAsyncBoolean true', async () => {
         const p = expect(Promise.resolve(true)).resolves.isAnAsyncBoolean(true);
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('async isAnAsyncBoolean false', async () => {
         const p = expect(Promise.resolve(true)).resolves.not.isAnAsyncBoolean(
@@ -112,41 +113,42 @@ test('Builds an extension', async (ctx): Promise<void> => {
         );
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('sync isAnAsyncBoolean true', async () => {
         const p = expect(true).isAnAsyncBoolean(true);
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('sync isAnAsyncBoolean false', async () => {
         const p = expect(true).not.isAnAsyncBoolean(false);
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('async isASyncBoolean true', async () => {
         const p = expect(Promise.resolve(true)).resolves.isASyncBoolean(true);
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('async isASyncBoolean false', async () => {
-        // noinspection JSVoidFunctionReturnValueUsed
         const p = expect(Promise.resolve(true)).resolves.not.isASyncBoolean(
             false,
         );
 
         await expect(p).resolves.toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('sync isASyncBoolean true', () => {
-        // noinspection JSVoidFunctionReturnValueUsed
-        const v = expect(true).isASyncBoolean(true);
+        expect(true).isASyncBoolean(true);
 
-        expect(v).toBeFalsy();
+        expect.hasAssertions();
     });
     await ctx.test('sync isASyncBoolean false', () => {
-        // noinspection JSVoidFunctionReturnValueUsed
-        const v = expect(true).not.isASyncBoolean(false);
+        expect(true).not.isASyncBoolean(false);
 
-        expect(v).toBeFalsy();
         expect.hasAssertions();
     });
 });
