@@ -14,6 +14,7 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
+    "noEmit": true,
     "sourceMap": true,
     // linter checks for common issues
     "noImplicitReturns": true,

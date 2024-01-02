@@ -19,14 +19,14 @@ import { stat } from 'node:fs/promises';
 import type {
     MatchersFor,
     MatcherContext,
-    ExpectationResult,
+    AsyncExpectationResult,
 } from 'extend-expect';
 
 async function isAFile(
     this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     const options = {
         comment: 'Check that a file exists',
         isNot: this.isNot,
@@ -90,7 +90,7 @@ async function isADirectory(
     this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     const options = {
         comment: 'Check that a directory exists',
         isNot: this.isNot,

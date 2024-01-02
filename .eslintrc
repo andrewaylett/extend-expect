@@ -1,4 +1,19 @@
 {
     "root": true,
-    "extends": ["andrewaylett"]
+    "extends": [
+        "andrewaylett",
+        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/stylistic-type-checked"
+    ],
+    "parserOptions": {
+        "project": true
+    },
+    "overrides": [
+        {
+            "files": ["jest.config.ts"],
+            "parserOptions": {
+                "project": "tsconfig.jest.json"
+            }
+        }
+    ]
 }

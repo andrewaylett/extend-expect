@@ -3,15 +3,15 @@ import { expect as jestExpect } from '@jest/globals';
 
 import type {
     MatchersFor,
-    MatcherState,
-    ExpectationResult,
+    MatcherContext,
+    AsyncExpectationResult,
 } from 'extend-expect';
 
 async function toBeAStub(
-    this: MatcherState,
+    this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     return {
         pass: true,
         message: () => '',

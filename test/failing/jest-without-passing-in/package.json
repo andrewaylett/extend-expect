@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "jest": "29.7.0"
   },

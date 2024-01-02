@@ -17,16 +17,16 @@
 import { ChildProcess } from 'child_process';
 
 import type {
-    ExpectationResult,
+    AsyncExpectationResult,
+    MatcherContext,
     MatchersFor,
-    MatcherState,
 } from 'extend-expect';
 
 async function toSpawnSuccessfully(
-    this: MatcherState,
+    this: MatcherContext,
     received: unknown,
     expected: unknown,
-): Promise<ExpectationResult> {
+): AsyncExpectationResult {
     const options = {
         comment: 'Check that a process succeeded',
         isNot: this.isNot,
@@ -35,10 +35,14 @@ async function toSpawnSuccessfully(
 
     if (typeof expected !== 'undefined' && typeof expected !== 'boolean') {
         // Prepend maybe not only for backward compatibility.
-        const matcherString = (options ? '' : '[.not]') + 'toSpawnSuccessfully';
         throw new Error(
             this.utils.matcherErrorMessage(
-                this.utils.matcherHint(matcherString, undefined, '', options),
+                this.utils.matcherHint(
+                    'toSpawnSuccessfully',
+                    undefined,
+                    '',
+                    options,
+                ),
                 // Because expected is omitted in hint above,
                 // expected is black instead of green in message below.
                 'this matcher must have a boolean expected argument, if one is provided',

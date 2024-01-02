@@ -2,6 +2,14 @@
   "files": ["./empty.ts"],
   "compilerOptions": {
     "noEmit": true,
-    "strict": true
+    "lib": ["es2023"],
+    "module": "node16",
+    "target": "es2022",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16"
   }
 }
