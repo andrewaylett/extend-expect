@@ -84,15 +84,13 @@ type Extensions<C> = {
  * The union of the standard matcher types and our extensions.
  */
 export type ExtendedMatchers<
-    Matchers extends MatchersFor<unknown>,
+    Functions,
     Original extends RawExpect,
-> = Matchers extends MatchersFor<infer Functions>
-    ? Functions &
-          Omit<
-              ReturnType<Original>,
-              InvertedMatcherKeys | AsyncMatcherKeys | keyof Matchers
-          >
-    : never;
+> = Functions &
+    Omit<
+        ReturnType<Original>,
+        InvertedMatcherKeys | AsyncMatcherKeys | keyof Functions
+    >;
 
 /**
  * Given an object with functions in it, a variant that always returns promises.
@@ -118,14 +116,16 @@ export type Promisible<T> = {
 /**
  * The extended `expect`, with all original matchers as well as our extensions.
  */
-export type Expect<
-    Matchers extends MatchersFor<unknown>,
-    Original extends RawExpect,
+export type ExtendedExpect<
+    Functions,
+    Original extends RawExpect = RawExpect,
 > = (<T = unknown>(
     actual: T,
-) => Promisible<ExtendedMatchers<Matchers, Original>>) &
+) => Promisible<ExtendedMatchers<Functions, Original>>) &
     BaseExpect &
-    AsymmetricMatchers & { not: Omit<AsymmetricMatchers, 'any' | 'anything'> };
+    AsymmetricMatchers & {
+        not: Omit<AsymmetricMatchers, 'any' | 'anything'>;
+    };
 
 /**
  * Extends Jest's `expect`, then returns it with the correct extended type.
@@ -151,7 +151,9 @@ export type Expect<
  */
 export function extend<Matchers extends MatchersFor<unknown>>(
     customMatchers: Matchers,
-): Expect<Matchers, RawExpect>;
+): Matchers extends MatchersFor<infer Functions>
+    ? ExtendedExpect<Functions>
+    : never;
 
 /**
  * Extends Jest's `expect`, then returns it with the correct extended type.
@@ -179,7 +181,12 @@ export function extend<Matchers extends MatchersFor<unknown>>(
 export function extend<
     Matchers extends MatchersFor<unknown>,
     Original extends RawExpect,
->(customMatchers: Matchers, expect: Original): Expect<Matchers, Original>;
+>(
+    customMatchers: Matchers,
+    expect: Original,
+): Matchers extends MatchersFor<infer Functions>
+    ? ExtendedExpect<Functions, Original>
+    : never;
 
 // noinspection JSUnusedGlobalSymbols
 export function extend<
@@ -188,7 +195,7 @@ export function extend<
 >(
     customMatchers: MatchersFor<Functions>,
     expect: RawExpect = originalExpect,
-): Expect<Functions, Original> {
+): ExtendedExpect<Functions, Original> {
     expect.extend(customMatchers);
-    return expect as unknown as Expect<Functions, Original>;
+    return expect as unknown as ExtendedExpect<Functions, Original>;
 }

@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-import { mkdtemp, readdir, stat } from 'node:fs/promises';
+import { mkdtemp, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
 import { spawn } from 'node:child_process';
@@ -48,96 +48,90 @@ async function buildTests(
     cases: Promise<string[]>,
     pass: boolean,
 ) {
-    await test(`${
-        pass ? 'Successful' : 'Failing'
-    } Tests`, async (ctx): Promise<void> => {
-        await Promise.all(
-            (await cases).map(async (testcase) => {
-                const testDirectory = path.resolve(base, testcase);
-                if (!(await stat(testDirectory)).isDirectory()) {
-                    return;
-                }
-                const buildDirectory = await mkdtemp(
-                    path.join(os.tmpdir(), `successful-${testcase}-`),
-                );
-                await ctx.test(
-                    `${testcase} should be a directory`,
-                    async () => {
-                        await expect(testDirectory).isADirectory();
-                    },
-                );
-                await ctx.test(`${testcase} should copy cleanly`, () =>
-                    expect(
-                        spawn('cp', ['-r', testDirectory, buildDirectory]),
-                    ).toSpawnSuccessfully(),
-                );
-                await ctx.test(`${testcase} should install cleanly`, () =>
-                    expect(
-                        spawn('npm', ['install'], {
-                            cwd: path.resolve(buildDirectory, testcase),
-                            stdio: 'pipe',
-                        }),
-                    ).toSpawnSuccessfully(),
-                );
-                await ctx.test(
-                    `${testcase} should install extend-expect cleanly`,
-                    () =>
-                        expect(
-                            spawn(
-                                'npm',
-                                [
-                                    'install',
-                                    path.resolve(testDirectory, '../../..'),
-                                ],
-                                {
-                                    cwd: path.resolve(buildDirectory, testcase),
-                                    stdio: 'pipe',
-                                },
-                            ),
-                        ).toSpawnSuccessfully(),
-                );
-                await ctx.test(
-                    `${testcase} should run tsc ${
-                        pass
-                            ? 'successfully'
-                            : 'and exit with a non-zero status code'
-                    }`,
-                    async () => {
-                        const childProcess = spawn(
-                            'npx',
+    const tests = (await cases).map(async (testcase) =>
+        test(`${testcase} should ${pass ? 'pass' : 'fail'}`, async (ctx) => {
+            const testCaseDirectory = path.resolve(base, testcase);
+            const projectDirectory = path.resolve(
+                testCaseDirectory,
+                '../../..',
+            );
+            const buildDirectory = await mkdtemp(
+                path.join(os.tmpdir(), `successful-${testcase}-`),
+            );
+            const testDirectory = path.resolve(buildDirectory, testcase);
+            await ctx.test(`${testcase} should be a directory`, async () => {
+                await expect(testCaseDirectory).isADirectory();
+            });
+            await ctx.test(`${testcase} should copy cleanly`, () =>
+                expect(
+                    spawn('cp', ['-r', testCaseDirectory, buildDirectory]),
+                ).toSpawnSuccessfully(),
+            );
+            await ctx.test(
+                `${testcase} should link package under test cleanly`,
+                () => {
+                    return expect(
+                        spawn(
+                            'npm',
                             [
-                                'tsc',
-                                '-b',
-                                path.resolve(buildDirectory, testcase),
+                                'install',
+                                `file:${projectDirectory}`,
+                                '--save-dev',
                             ],
                             {
-                                cwd: path.resolve(testDirectory, '../../..'),
+                                cwd: testDirectory,
                                 stdio: 'pipe',
                             },
-                        );
+                        ),
+                    ).toSpawnSuccessfully();
+                },
+            );
+            await ctx.test(`${testcase} should install cleanly`, () =>
+                expect(
+                    spawn('npm', ['install', '--install-links'], {
+                        cwd: testDirectory,
+                        stdio: 'pipe',
+                    }),
+                ).toSpawnSuccessfully(),
+            );
+            await ctx.test(
+                `${testcase} should run tsc ${
+                    pass
+                        ? 'successfully'
+                        : 'and exit with a non-zero status code'
+                }`,
+                async () => {
+                    const childProcess = spawn(
+                        'npx',
+                        ['tsc', '-b', testDirectory],
+                        {
+                            cwd: projectDirectory,
+                            stdio: 'pipe',
+                        },
+                    );
 
-                        const allData: string[] = [];
-                        childProcess.stdout.on('data', (data: string) =>
-                            allData.push(data),
-                        );
-                        childProcess.stdout.pipe(process.stdout);
-                        childProcess.stderr.pipe(process.stderr);
+                    const allData: string[] = [];
+                    childProcess.stdout.on('data', (data: string) =>
+                        allData.push(data),
+                    );
+                    childProcess.stdout.pipe(process.stdout);
+                    childProcess.stderr.pipe(process.stderr);
 
-                        await expect(childProcess).toSpawnSuccessfully(pass);
+                    await expect(childProcess).toSpawnSuccessfully(pass);
 
-                        const blob = allData.join('');
+                    const blob = allData.join('');
 
-                        const { assert } = (await import(
-                            path.resolve(testDirectory, 'expect.cjs')
-                        )) as {
-                            assert: (output: string, e: typeof expect) => void;
-                        };
-                        assert(blob, expect);
-                    },
-                );
-            }),
-        );
-    });
+                    const { assert } = (await import(
+                        path.resolve(testCaseDirectory, 'expect.cjs')
+                    )) as {
+                        assert: (output: string, e: typeof expect) => void;
+                    };
+                    assert(blob, expect);
+                },
+            );
+        }),
+    );
+    await Promise.all(tests);
 }
 
 await buildTests(SUCCESSFUL_BASE, SUCCESSFUL, true);
