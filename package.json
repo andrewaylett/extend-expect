@@ -54,7 +54,7 @@
     "prepackage-checks": "0.1.2",
     "prettier": "3.2.4",
     "semver": "7.5.4",
-    "ts-jest": "29.1.1",
+    "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "typescript": "5.3.3"
   },
