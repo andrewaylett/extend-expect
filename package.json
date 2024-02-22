@@ -43,7 +43,7 @@
     "@jest/globals": "29.7.0",
     "@tsconfig/node18": "18.2.2",
     "@types/jest": "29.5.12",
-    "@types/node": "20.11.19",
+    "@types/node": "20.11.20",
     "@types/semver": "7.5.7",
     "downgrade-build": "1.0.0",
     "eslint": "8.56.0",
