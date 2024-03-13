@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "18.2.2",
-    "@types/node": "20.11.26",
+    "@types/node": "20.11.27",
     "downgrade-build": "1.0.0",
     "eslint": "8.57.0",
     "eslint-config-andrewaylett": "3.0.0",
