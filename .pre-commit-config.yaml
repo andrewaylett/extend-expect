@@ -16,7 +16,7 @@ repos:
       - id: check-added-large-files
       - id: mixed-line-ending
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.0.3
+    rev: 3.1.2
     hooks:
       - id: editorconfig-checker
         types_or:
