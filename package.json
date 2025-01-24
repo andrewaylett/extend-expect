@@ -47,7 +47,7 @@
     "eslint-config-andrewaylett": "3.1.0",
     "expect": "29.7.0",
     "jest-matcher-utils": "29.7.0",
-    "prepackage-checks": "0.1.2",
+    "prepackage-checks": "0.2.0",
     "test-in-build": "0.2.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"
